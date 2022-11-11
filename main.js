@@ -64,8 +64,81 @@ class Projectile {
     }
 };
 
+class Invader {
+    constructor({position}){
+        this.velocity = {
+            x: 0,
+            y: 0
+        };
+        
+        const image = new Image();
+        image.src = './img/invader.png';
+        image.onload = () =>{
+            const scale = 1;
+            this.image = image;
+            this.width = image.width * scale;
+            this.height = image.height * scale;
+            this.position = {
+            x: position.x,
+            y: position.y
+            };
+        }
+        
+    }
+    draw() {
+        c.drawImage(this.image, this.position.x, this.position.y, this.width, this.height);
+    }
+
+    update({velocity}){
+        if(this.image){
+            this.draw();
+            this.position.x += velocity.x;
+            this.position.y += velocity.y;
+        }
+    }
+};
+
+class Grid{
+    constructor(){
+        this.position ={
+            x:0, y:0
+        };
+        this.velocity ={
+            x:3, y:0
+        };
+        this.invaders = [];
+
+        const rows = Math.floor(Math.random() * 5 + 2);
+        const columns = Math.floor(Math.random() * 10 + 5);
+
+        this.width = columns * 30;
+
+        for (let i=0; i< columns; i++){
+            for (let j = 0; j<rows; j++){
+                this.invaders.push(new Invader({
+                    position:{
+                        x:i * 30,
+                        y:j * 30
+                    }
+                }))
+            }
+        }
+    }
+    update(){
+        this.position.x += this.velocity.x;
+        this.position.y += this.velocity.y;
+        this.velocity.y = 0
+        if (this.position.x + this.width >= canvas.width || this.position.x <= 0){
+            this.velocity.x = - this.velocity.x
+            this.velocity.y = 30;
+        }
+    }
+}
+
 const player = new Player();
 const projectiles = [];
+const grids = [new Grid()];
+
 const keys = {
     a: {
         pressed : false
@@ -82,6 +155,8 @@ function animate(){
     requestAnimationFrame(animate);
     c.fillStyle = 'black';
     c.fillRect(0,0, canvas.width, canvas.height);
+
+    
     
     player.update();
     projectiles.forEach((projectile, index) => {
@@ -92,6 +167,13 @@ function animate(){
         } else {
             projectile.update();
         }
+    })
+
+    grids.forEach((grid)=>{
+        grid.update();
+        grid.invaders.forEach(invader=>{
+            invader.update({velocity: grid.velocity});
+        })
     })
 
     if( keys.a.pressed && player.position.x >= 0){
@@ -135,8 +217,7 @@ window.addEventListener('keyup',({key})=>{
             keys.d.pressed = false;
             break;
         case ' ':
-            
-            // keys.space.pressed = true;
+            keys.space.pressed = true;
             break;
     }
     
