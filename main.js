@@ -2,8 +2,8 @@ const canvas = document.querySelector('canvas');
 const c = canvas.getContext('2d');
 const scoreEl= document.querySelector('#scoreEl');
 
-canvas.width = innerWidth;
-canvas.height = innerHeight;
+canvas.width = 1024;
+canvas.height = 576;
 
 class Player{
     constructor(){
@@ -162,7 +162,7 @@ class InvaderProjectile {
         this.height= 10;
     }
     draw(){
-        c.fillStyle = 'white';
+        c.fillStyle = 'orange';
         c.fillRect(this.position.x, this.position.y, this.width, this.height);
 
     }
